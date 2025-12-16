@@ -1,16 +1,36 @@
-interface LoadingProps {
-  size?: 'sm' | 'md' | 'lg'
-}
+import * as React from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
 
-export const Loading = ({ size = 'md' }: LoadingProps) => {
-  const sizeClass =
-    size === 'sm' ? 'h-4 w-4' : size === 'lg' ? 'h-8 w-8' : 'h-6 w-6'
+import { cn } from '@/lib/utils'
 
+const loadingVariants = cva(
+  'animate-spin rounded-full border-solid border-t-transparent border-oz-purple',
+  {
+    variants: {
+      size: {
+        sm: 'size-4 border-2',
+        md: 'size-8 border-[3px]',
+        lg: 'size-12 border-4',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  }
+)
+
+function Loading({
+  className,
+  size,
+  ...props
+}: React.ComponentProps<'div'> & VariantProps<typeof loadingVariants>) {
   return (
     <div
-      className={`border-muted-foreground animate-spin rounded-full border-2 border-t-transparent ${sizeClass}`}
-      role="status"
-      aria-label="로딩 중"
+      data-slot="loading"
+      className={cn(loadingVariants({ size }), className)}
+      {...props}
     />
   )
 }
+
+export { Loading, loadingVariants }
