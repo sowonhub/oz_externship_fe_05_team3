@@ -4,7 +4,7 @@ import { InputGroupButton } from './input-group';
 
 export function InputGroupCustom() {
   return (
-    <div className="focus-within:border-oz-purple grid h-[120px] w-full max-w-[868px] gap-6">
+    <div className="grid h-[120px] w-full max-w-[868px] gap-6">
       <InputGroup>
         <TextareaAutosize
           data-slot="input-group-control"
@@ -13,7 +13,7 @@ export function InputGroupCustom() {
         />
         <InputGroupAddon align="block-end">
           <InputGroupButton
-            className="focus-within:border-oz-purple bg-oz-gray-white text-oz-gray-dark hover:bg-oz-purple-light active:bg-oz-purple ml-auto h-[40px] w-[80px] rounded-full text-[16px] active:text-white"
+            className="group-focus-within/input-group:text-oz-purple group-focus-within/input-group:bg-oz-purple-light group-focus-within/input-group:border-oz-purple bg-oz-gray-white text-oz-gray-dark hover:bg-oz-purple-light ml-auto h-[40px] w-[80px] rounded-full border border-transparent text-[16px] group-focus-within/input-group:border"
             size="sm"
             variant="outline"
           >
