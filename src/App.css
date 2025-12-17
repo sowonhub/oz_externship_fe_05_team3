@@ -41,6 +41,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* custom colors */
+  --color-oz-purple-white: #f7f2ff;
   --color-oz-purple-light: #efe6fc;
   --color-oz-purple: #6201e0;
   --color-oz-purple-deep: #4e01b3;
@@ -49,7 +50,9 @@
   --color-oz-gray-white: #ececec;
   --color-oz-gray-light: #cecece;
   --color-oz-gray-soft: #bdbdbd;
+  --color-oz-gray-white-dark: #707070;
   --color-oz-gray-dark: #4d4d4d;
+  --color-oz-gray-black: #303030;
 }
 
 :root {
