@@ -8,7 +8,7 @@ import {
 } from '../ui/item';
 import { ThumbsUp } from 'lucide-react';
 
-export function Card() {
+export function ListCard() {
   return (
     <div className="flex h-[216px] w-[944px] flex-col gap-4">
       <Item
@@ -19,9 +19,11 @@ export function Card() {
         <a href="" target="_blank" rel="noopener noreferrer">
           <ItemContent className="h-full">
             <div className="flex flex-col gap-2">
-              <ItemDescription>예시 카테고리</ItemDescription>
+              <ItemDescription className="text-oz-gray-dark text-[12px]">
+                예시 카테고리
+              </ItemDescription>
               <ItemTitle className="text-[18px]">예시 게시글 제목</ItemTitle>
-              <ItemDescription>
+              <ItemDescription className="text-oz-gray w- text-[14px]">
                 예시 게시글 내용 예시 게시글 내용 예시 게시글 내용 예시 게시글
                 내용 예시 게시글 내용 예시 게시글 내용 예시 게시글 내용 예시
                 게시글 내용 예시 게시글 내용 예시 게시글 내용 예시 게시글 내용
@@ -49,12 +51,12 @@ export function Card() {
                   alt="예시 게시글 이미지"
                   className="bg-oz-gray-light h-[24px] w-[24px] rounded-full object-cover"
                 />
-                <span className="text-[12px]">김소원</span>
-                <span className="text-[12px]">1시간 전</span>
+                <span className="text-oz-gray-dark text-[12px]">김소원</span>
+                <span className="text-oz-gray text-[12px]">1시간 전</span>
               </div>
             </div>
           </ItemContent>
-          <ItemMedia className="h-[168px] w-[228px]">
+          <ItemMedia className="ml-10 h-[168px] w-[228px]">
             <img
               src="./src/assets/image.png"
               alt="예시 게시글 이미지"
