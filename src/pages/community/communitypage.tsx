@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/CommunityPage/card';
+import { Card } from '@/components/CommunityPage/ListCard';
 import {
   InputGroup,
   InputGroupAddon,
@@ -9,7 +9,7 @@ import { Pagination } from '@/components/ui/pagination';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import { NavigationMenu } from '@radix-ui/react-navigation-menu';
 import { Pencil, SearchIcon } from 'lucide-react';
-import { SearchSelect } from '@/components/CommunityPage/searchSelect';
+import { SearchSelect } from '@/components/CommunityPage/SelectOption';
 
 function CommunityPage() {
   return (
