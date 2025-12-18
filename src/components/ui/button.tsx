@@ -19,6 +19,8 @@ const buttonVariants = cva(
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost:
           'active:bg-oz-purple-light active:text-oz-purple hover:bg-oz-gray-white hover:text-oz-gray-dark text-oz-gray-dark dark:hover:bg-accent/50',
+        ghost_purple_light:
+          'hover:bg-oz-purple-light hover:text-oz-purple active:bg-oz-purple-medium active:text-oz-purple',
         ghost_purple: 'bg-oz-purple-light text-oz-purple',
         link: 'text-primary underline-offset-4 hover:underline',
       },
