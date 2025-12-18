@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export function SearchSelect() {
+export function SearchOption() {
   return (
     <Select>
       <SelectTrigger className="w-[120px] text-[16px]">
