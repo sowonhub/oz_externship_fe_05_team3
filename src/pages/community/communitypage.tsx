@@ -1,50 +1,49 @@
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/communitypage/ListCard';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group';
-import { Pagination } from '@/components/ui/pagination';
+import { ListCard } from '@/components/communitypage/ListCard';
 import { NavigationMenu } from '@/components/communitypage/NavigationMenu';
-import { Pencil, SearchIcon } from 'lucide-react';
-import { SearchSelect } from '@/components/communitypage/SelectOption';
-import { Link } from 'react-router-dom';
+import { SearchOption } from '@/components/communitypage/SearchOption';
+import { SearchInput } from '@/components/communitypage/SearchInput';
+import { SearchButton } from '@/components/communitypage/SearchButton';
+import { CommunityPagination } from '@/components/communitypage/Pagination';
+import { ArrayOption } from '@/components/communitypage/ArrayOption';
 
 function CommunityPage() {
   return (
-    <div className="mx-auto flex max-w-[944px] flex-col gap-4">
-      {/* 헤더 */}
-      <h1 className="text-[32px] font-bold">커뮤니티</h1>
-      <div className="flex items-center gap-4">
-        <SearchSelect />
-        <InputGroup className="h-[48px] w-[472px] rounded-full">
-          <InputGroupInput className="text-[14px]" placeholder="질문검색" />
-          <InputGroupAddon>
-            <SearchIcon />
-          </InputGroupAddon>
-        </InputGroup>
-        <Link to="/community/write" className="">
-          <Button variant="default" className="h-[48px] w-[120px] text-[16px]">
-            <Pencil className="size-5" />
-            글쓰기
-          </Button>
-        </Link>
-      </div>
-      {/* 내비게이션 */}
-      <div>
-        <NavigationMenu />
-      </div>
-      {/* 카드 */}
-      <hr className="w-full" />
-      <div className="w-full">
-        <Card />
-      </div>
-      {/* 페이지네이션 */}
-      <hr className="w-full" />
-      <div className="w-full">
-        <Pagination className="w-full" />
-      </div>
+    <div className="mx-auto mt-30 mb-50 flex max-w-[944px] flex-col items-center gap-4">
+      <header className="mx-auto flex w-full flex-col gap-4">
+        <h1 className="text-[32px] font-bold">커뮤니티</h1>
+        <section className="mb-10 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <SearchOption />
+            <SearchInput />
+          </div>
+          <div>
+            <SearchButton />
+          </div>
+        </section>
+
+        <section className="flex items-center justify-between gap-4">
+          <div>
+            <NavigationMenu />
+          </div>
+          <div>
+            <ArrayOption />
+          </div>
+        </section>
+        <hr />
+      </header>
+
+      <main className="mb-10 flex flex-col gap-4">
+        <ListCard />
+        <ListCard />
+        <ListCard />
+        <ListCard />
+        <ListCard />
+        <hr />
+      </main>
+
+      <footer className="flex justify-center">
+        <CommunityPagination />
+      </footer>
     </div>
   );
 }
