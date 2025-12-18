@@ -1,4 +1,5 @@
 // src/pages/communitydetail/communitydetailpage.tsx
+import { Button } from '@/components/ui/button';
 import { useParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +36,16 @@ function CommunityDetailPage() {
         <div className="prose max-w-none">
           <p>게시글 내용이 여기에 표시됩니다. ID: {id}</p>
           <p>실제 데이터는 API 연동 후 교체될 예정입니다.</p>
+        </div>
+
+        {/* 액션 버튼 영역 */}
+        <div className="mt-6 flex justify-end gap-3">
+          <Button variant="ghost_purple" size="sm" round="full">
+            좋아요
+          </Button>
+          <Button variant="outline" size="sm" round="full">
+            공유하기
+          </Button>
         </div>
       </section>
 
