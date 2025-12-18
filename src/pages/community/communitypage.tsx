@@ -1,15 +1,15 @@
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/CommunityPage/ListCard';
+import { Card } from '@/components/communitypage/ListCard';
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
 import { Pagination } from '@/components/ui/pagination';
-import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
-import { NavigationMenu } from '@radix-ui/react-navigation-menu';
+import { NavigationMenu } from '@/components/communitypage/NavigationMenu';
 import { Pencil, SearchIcon } from 'lucide-react';
-import { SearchSelect } from '@/components/CommunityPage/SelectOption';
+import { SearchSelect } from '@/components/communitypage/SelectOption';
+import { Link } from 'react-router-dom';
 
 function CommunityPage() {
   return (
@@ -24,15 +24,16 @@ function CommunityPage() {
             <SearchIcon />
           </InputGroupAddon>
         </InputGroup>
-        <Button variant="default" className="h-[48px] w-[120px] text-[16px]">
-          <Pencil className="size-5" />
-          글쓰기
-        </Button>
+        <Link to="/community/write" className="">
+          <Button variant="default" className="h-[48px] w-[120px] text-[16px]">
+            <Pencil className="size-5" />
+            글쓰기
+          </Button>
+        </Link>
       </div>
       {/* 내비게이션 */}
       <div>
-        <NavigationMenu></NavigationMenu>
-        <DropdownMenu></DropdownMenu>
+        <NavigationMenu />
       </div>
       {/* 카드 */}
       <hr className="w-full" />
