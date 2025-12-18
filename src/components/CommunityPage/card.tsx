@@ -5,7 +5,7 @@ import {
   ItemDescription,
   ItemMedia,
   ItemTitle,
-} from './item';
+} from '../ui/item';
 import { ThumbsUp } from 'lucide-react';
 
 export function Card() {
