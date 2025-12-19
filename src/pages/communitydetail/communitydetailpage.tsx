@@ -1,12 +1,13 @@
 // src/pages/communitydetail/communitydetailpage.tsx
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useInView } from 'react-intersection-observer';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { InputGroupCustom } from '@/components/ui/input-group-custom';
-
 import { ThumbsUp } from 'lucide-react';
+
 import linkIcon from '@/assets/icon/feathericons/link.png';
 
 type CommunityDetailVariant = 'guest' | 'member' | 'author';
@@ -64,8 +65,17 @@ function CommunityDetailPage() {
   const [isMentionOpen, setIsMentionOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
 
+  // 댓글 삭제 모달 상태
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [targetCommentId, setTargetCommentId] = useState<number | null>(null);
+
+  // 무한스크롤 상태
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [visibleComments, setVisibleComments] = useState<Comment[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const { ref: loadMoreRef, inView } = useInView({ threshold: 0.1 });
 
   const post: Post = useMemo(
     () => ({
@@ -94,10 +104,107 @@ function CommunityDetailPage() {
           content: '굿굿',
           createdAt: '2025년 6월 13일',
         },
+        {
+          id: 3,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 4,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 5,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 6,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 7,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 8,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 9,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 10,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 11,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 12,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 13,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        {
+          id: 14,
+          author: { nickname: '김오즈', profileImageUrl: '' },
+          content: '좋아요',
+          createdAt: '2025년 6월 13일',
+        },
+        // 추후 API 연동 시 이 배열 대신 서버 데이터 사용
       ],
     }),
     [id]
   );
+
+  // 초기 댓글 페이지 설정
+  useEffect(() => {
+    setVisibleComments(post.comments.slice(0, pageSize));
+    setPage(1);
+    setHasMore(post.comments.length > pageSize);
+  }, [post.comments]);
+
+  // inView 되면 다음 페이지 로딩
+  useEffect(() => {
+    if (!inView || isLoading || !hasMore) return;
+
+    setIsLoading(true);
+
+    const nextPage = page + 1;
+    const start = (nextPage - 1) * pageSize;
+    const end = start + pageSize;
+    const nextSlice = post.comments.slice(start, end);
+
+    setVisibleComments((prev) => [...prev, ...nextSlice]);
+    setPage(nextPage);
+    setHasMore(end < post.comments.length);
+    setIsLoading(false);
+  }, [inView, isLoading, hasMore, page, post.comments]);
 
   const handleLikePost = () => {
     if (variant === 'guest') return;
@@ -126,6 +233,7 @@ function CommunityDetailPage() {
     }
   };
 
+  // 댓글 삭제 모달 핸들러
   const handleOpenDeleteDialog = (commentId: number) => {
     setTargetCommentId(commentId);
     setIsDeleteDialogOpen(true);
@@ -203,7 +311,7 @@ function CommunityDetailPage() {
             </div>
 
             <div className="flex justify-end gap-[8px]">
-              {/* 좋아요 버튼 - Figma 가이드 반영 */}
+              {/* 좋아요 버튼 (아이콘 보라색, hover 디자인 반영) */}
               <Button
                 type="button"
                 onClick={handleLikePost}
@@ -218,7 +326,7 @@ function CommunityDetailPage() {
                 <span className="leading-[16px]">{post.likes}</span>
               </Button>
 
-              {/* 공유하기 버튼 - Figma 가이드 반영 */}
+              {/* 공유하기 버튼 (디자인 가이드 반영) */}
               <Button
                 type="button"
                 onClick={handleSharePost}
@@ -242,7 +350,6 @@ function CommunityDetailPage() {
             </div>
 
             <div className="relative">
-              {/* 공통 댓글 인풋 컴포넌트 */}
               <InputGroupCustom
                 value={commentText}
                 disabled={variant === 'guest'}
@@ -255,7 +362,7 @@ function CommunityDetailPage() {
                 onSubmit={handleSubmitComment}
               />
 
-              {/* 댓글 언급 모달 */}
+              {/* 멘션 모달 */}
               {isMentionOpen && variant !== 'guest' && (
                 <div className="absolute top-[128px] left-0 z-10 mt-[8px] w-[280px] rounded-[16px] border border-[#ECECEC] bg-white p-[12px] shadow-[0_4px_12px_rgba(0,0,0,0.06)]">
                   <div className="mb-[8px] text-[12px] font-medium text-[#121212]">
@@ -288,41 +395,62 @@ function CommunityDetailPage() {
             </header>
 
             <div>
-              {post.comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className="flex items-start gap-[12px] border-b border-[#F7F7F7] py-[16px] last:border-b-0"
-                >
-                  <Avatar className="h-[40px] w-[40px] shrink-0">
-                    <AvatarImage src={comment.author.profileImageUrl} />
-                    <AvatarFallback className="bg-[#F5ECFF] text-[14px] font-semibold text-[#6B21A8]">
-                      {comment.author.nickname[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="mb-[6px] flex items-center gap-[8px]">
-                      <span className="text-[13px] font-semibold text-[#121212]">
-                        {comment.author.nickname}
-                      </span>
-                      <span className="text-[11px] text-[#BDBDBD]">
-                        {comment.createdAt}
-                      </span>
-                      {variant === 'author' && (
-                        <button
-                          type="button"
-                          onClick={() => handleOpenDeleteDialog(comment.id)}
-                          className="text-[11px] text-[#BDBDBD] hover:text-[#6201E0] hover:underline"
-                        >
-                          삭제
-                        </button>
+              {visibleComments.map((comment, index) => {
+                const isLast = index === visibleComments.length - 1;
+
+                return (
+                  <div
+                    key={comment.id}
+                    className="flex items-start gap-[12px] border-b border-[#F7F7F7] py-[16px] last:border-b-0"
+                  >
+                    <Avatar className="h-[40px] w-[40px] shrink-0">
+                      <AvatarImage src={comment.author.profileImageUrl} />
+                      <AvatarFallback className="bg-[#F5ECFF] text-[14px] font-semibold text-[#6B21A8]">
+                        {comment.author.nickname[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="mb-[6px] flex items-center gap-[8px]">
+                        <span className="text-[13px] font-semibold text-[#121212]">
+                          {comment.author.nickname}
+                        </span>
+                        <span className="text-[11px] text-[#BDBDBD]">
+                          {comment.createdAt}
+                        </span>
+                        {variant === 'author' && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenDeleteDialog(comment.id)}
+                            className="text-[11px] text-[#BDBDBD] hover:text-[#6201E0] hover:underline"
+                          >
+                            삭제
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-[13px] leading-[20px] text-[#4D4D4D]">
+                        {comment.content}
+                      </p>
+
+                      {/* 마지막 댓글 카드 아래에 로딩/감시용 div */}
+                      {isLast && (
+                        <div className="mt-[8px] h-[24px]" ref={loadMoreRef}>
+                          {isLoading && (
+                            <span className="text-[12px] text-[#BDBDBD]">
+                              불러오는 중...
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
-                    <p className="text-[13px] leading-[20px] text-[#4D4D4D]">
-                      {comment.content}
-                    </p>
                   </div>
+                );
+              })}
+
+              {!hasMore && visibleComments.length > 0 && (
+                <div className="py-[12px] text-center text-[12px] text-[#C4C4C4]">
+                  더 이상 댓글이 없습니다.
                 </div>
-              ))}
+              )}
             </div>
           </section>
         </section>
