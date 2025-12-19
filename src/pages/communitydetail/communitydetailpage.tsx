@@ -1,6 +1,6 @@
 // src/pages/communitydetail/communitydetailpage.tsx
 import { useMemo, useState } from 'react';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, FocusEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -62,6 +62,9 @@ function CommunityDetailPage() {
 
   const [isMentionOpen, setIsMentionOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [isCommentFocused, setIsCommentFocused] = useState(false);
+
+  // 댓글 삭제 모달용 상태
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [targetCommentId, setTargetCommentId] = useState<number | null>(null);
 
@@ -125,6 +128,16 @@ function CommunityDetailPage() {
     }
   };
 
+  const handleCommentFocus = () => {
+    if (variant === 'guest') return;
+    setIsCommentFocused(true);
+  };
+
+  const handleCommentBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
+    setIsCommentFocused(false);
+  };
+
+  // 댓글 삭제 모달 핸들러
   const handleOpenDeleteDialog = (commentId: number) => {
     setTargetCommentId(commentId);
     setIsDeleteDialogOpen(true);
@@ -137,7 +150,6 @@ function CommunityDetailPage() {
 
   const handleConfirmDeleteComment = () => {
     if (targetCommentId == null) return;
-    // TODO: 실제 삭제 API 연결
     console.log('댓글 삭제:', targetCommentId);
     setIsDeleteDialogOpen(false);
     setTargetCommentId(null);
@@ -145,6 +157,15 @@ function CommunityDetailPage() {
 
   const isCommentEmpty = commentText.trim().length === 0;
   const isRegisterDisabled = variant === 'guest' || isCommentEmpty;
+
+  const commentBoxBase =
+    'flex h-[80px] items-center gap-[16px] rounded-[16px] px-[24px] transition-colors';
+  const commentBoxStateClass =
+    variant === 'guest'
+      ? 'border border-[#F0F0F0] bg-[#FAFAFA]'
+      : isCommentFocused
+        ? 'border border-[#6201E0] bg-white'
+        : 'border border-[#F1E4FF] bg-white';
 
   return (
     <div className="flex justify-center bg-white pt-[112px] pb-[160px]">
@@ -204,7 +225,6 @@ function CommunityDetailPage() {
             </div>
 
             <div className="flex justify-end gap-[8px]">
-              {/* 좋아요 Button - Figma 가이드: enabled 시 연회색 테두리 + 회색 텍스트 */}
               <Button
                 type="button"
                 onClick={handleLikePost}
@@ -223,7 +243,6 @@ function CommunityDetailPage() {
                 <span className="leading-[16px]">{post.likes}</span>
               </Button>
 
-              {/* 공유하기 Button - Figma 가이드: 연회색 테두리 + 회색 텍스트 */}
               <Button
                 type="button"
                 onClick={handleSharePost}
@@ -247,7 +266,7 @@ function CommunityDetailPage() {
             </div>
 
             <div className="relative">
-              <div className="flex h-[80px] items-center gap-[16px] rounded-[16px] border border-[#F1E4FF] bg-white px-[24px]">
+              <div className={`${commentBoxBase} ${commentBoxStateClass}`}>
                 <textarea
                   className="h-full flex-1 resize-none bg-transparent text-[13px] leading-[20px] text-[#121212] placeholder:text-[#CCCCCC] focus:outline-none"
                   placeholder={
@@ -258,8 +277,9 @@ function CommunityDetailPage() {
                   disabled={variant === 'guest'}
                   value={commentText}
                   onChange={handleCommentChange}
+                  onFocus={handleCommentFocus}
+                  onBlur={handleCommentBlur}
                 />
-                {/* 등록 Button - Figma 가이드: disabled 회색, enabled 보라 */}
                 <Button
                   type="button"
                   onClick={handleSubmitComment}
@@ -274,7 +294,6 @@ function CommunityDetailPage() {
                 </Button>
               </div>
 
-              {/* 댓글 언급 모달 */}
               {isMentionOpen && variant !== 'guest' && (
                 <div className="absolute top-[88px] left-[24px] z-10 mt-[8px] w-[280px] rounded-[16px] border border-[#ECECEC] bg-white p-[12px] shadow-[0_4px_12px_rgba(0,0,0,0.06)]">
                   <div className="mb-[8px] text-[12px] font-medium text-[#121212]">
@@ -297,7 +316,6 @@ function CommunityDetailPage() {
                 <span className="text-[18px]">💬</span>
                 <span>댓글 {post.comments.length}개</span>
               </div>
-              {/* 정렬 버튼 - Figma 가이드 참고 */}
               <button
                 type="button"
                 className="flex h-[40px] items-center justify-center gap-[6px] rounded-[999px] border border-[#ECECEC] bg-white px-[16px] text-[13px] font-medium text-[#707070] shadow-none transition-colors hover:border-[#DAD0FF] hover:bg-[#FAFAFA]"
