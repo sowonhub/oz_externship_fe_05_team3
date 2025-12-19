@@ -62,6 +62,8 @@ function CommunityDetailPage() {
 
   const [isMentionOpen, setIsMentionOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [targetCommentId, setTargetCommentId] = useState<number | null>(null);
 
   const post: Post = useMemo(
     () => ({
@@ -80,13 +82,13 @@ function CommunityDetailPage() {
       comments: [
         {
           id: 1,
-          author: { nickname: 'jnubugo', profileImageUrl: '' },
+          author: { nickname: '김소원', profileImageUrl: '' },
           content: '좋아요',
           createdAt: '2025년 6월 13일',
         },
         {
           id: 2,
-          author: { nickname: 'name2', profileImageUrl: '' },
+          author: { nickname: '나원국', profileImageUrl: '' },
           content: '굿굿',
           createdAt: '2025년 6월 13일',
         },
@@ -121,6 +123,24 @@ function CommunityDetailPage() {
     } else {
       setIsMentionOpen(false);
     }
+  };
+
+  const handleOpenDeleteDialog = (commentId: number) => {
+    setTargetCommentId(commentId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleCancelDeleteComment = () => {
+    setIsDeleteDialogOpen(false);
+    setTargetCommentId(null);
+  };
+
+  const handleConfirmDeleteComment = () => {
+    if (targetCommentId == null) return;
+    // TODO: 실제 삭제 API 연결
+    console.log('댓글 삭제:', targetCommentId);
+    setIsDeleteDialogOpen(false);
+    setTargetCommentId(null);
   };
 
   const isCommentEmpty = commentText.trim().length === 0;
@@ -184,7 +204,7 @@ function CommunityDetailPage() {
             </div>
 
             <div className="flex justify-end gap-[8px]">
-              {/* 좋아요 Button - Figma 가이드: enabled 시 연회색 테두리 + 회색 텍스트  */}
+              {/* 좋아요 Button - Figma 가이드: enabled 시 연회색 테두리 + 회색 텍스트 */}
               <Button
                 type="button"
                 onClick={handleLikePost}
@@ -310,6 +330,7 @@ function CommunityDetailPage() {
                       {variant === 'author' && (
                         <button
                           type="button"
+                          onClick={() => handleOpenDeleteDialog(comment.id)}
                           className="text-[11px] text-[#BDBDBD] hover:text-[#6201E0] hover:underline"
                         >
                           삭제
@@ -326,6 +347,33 @@ function CommunityDetailPage() {
           </section>
         </section>
       </main>
+
+      {/* 댓글 삭제 확인 모달 */}
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="w-[428px] rounded-[16px] bg-white px-[24px] py-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.16)]">
+            <p className="mb-[20px] text-[14px] text-[#121212]">
+              댓글을 삭제하시겠습니까?
+            </p>
+            <div className="flex justify-end gap-[8px]">
+              <Button
+                type="button"
+                onClick={handleCancelDeleteComment}
+                className="h-[38px] rounded-[999px] border border-[#E4E4E4] bg-white px-[20px] text-[13px] font-medium text-[#707070] shadow-none hover:bg-[#F7F7F7]"
+              >
+                취소
+              </Button>
+              <Button
+                type="button"
+                onClick={handleConfirmDeleteComment}
+                className="h-[38px] rounded-[999px] bg-[#6201E0] px-[20px] text-[13px] font-semibold text-white shadow-none hover:bg-[#5201C0]"
+              >
+                확인
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
