@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-// 아이콘 이미지 (경로/파일명은 프로젝트에 맞게 확인)
 import thumbsUpIcon from '@/assets/icon/feathericons/thumbs-up@2x.png';
 import linkIcon from '@/assets/icon/feathericons/link.png';
 
@@ -59,8 +58,7 @@ function CommunityDetailPage() {
   const { id } = useParams<{ id: string }>();
 
   // TODO: 실제 로그인/작성자 여부와 연결
-  // 지금은 "작성자 뷰" 테스트를 위해 author 고정
-  const variant: CommunityDetailVariant = 'author';
+  let variant: CommunityDetailVariant = 'author';
 
   const [isMentionOpen, setIsMentionOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -73,7 +71,7 @@ function CommunityDetailPage() {
       content:
         'https://www.codeit.kr/costudy/join/684e26b75155062e46211e77\n\n함께 멈출해요',
       author: {
-        nickname: '김태산',
+        nickname: '안지선',
         profileImageUrl: '',
       },
       views: 60,
@@ -185,36 +183,36 @@ function CommunityDetailPage() {
               </p>
             </div>
 
-            <div className="flex justify-end gap-[12px]">
-              {/* 좋아요 Button */}
+            <div className="flex justify-end gap-[8px]">
+              {/* 좋아요 Button - Figma 가이드: enabled 시 연회색 테두리 + 회색 텍스트  */}
               <Button
                 type="button"
                 onClick={handleLikePost}
                 disabled={variant === 'guest'}
-                className={`flex h-[38px] w-[62px] items-center justify-center gap-[6px] rounded-[999px] border bg-white text-[13px] font-medium shadow-none ${
+                className={`flex h-[38px] items-center justify-center gap-[6px] rounded-[999px] border px-[12px] text-[13px] font-medium shadow-none transition-colors ${
                   variant === 'guest'
-                    ? 'cursor-not-allowed border-[#E4E4E4] text-[#BDBDBD]'
-                    : 'border-[#6201E0] text-[#6201E0] hover:bg-[#F9F5FF]'
+                    ? 'cursor-not-allowed border-[#CECECE] bg-white text-[#BDBDBD]'
+                    : 'border-[#CECECE] bg-white text-[#6201E0] hover:bg-[#F9F5FF]'
                 }`}
               >
                 <img
                   src={thumbsUpIcon}
                   alt="좋아요"
-                  className="h-[16px] w-[16px]"
+                  className="h-[16px] w-[16px] shrink-0"
                 />
                 <span className="leading-[16px]">{post.likes}</span>
               </Button>
 
-              {/* 공유하기 Button */}
+              {/* 공유하기 Button - Figma 가이드: 연회색 테두리 + 회색 텍스트 */}
               <Button
                 type="button"
                 onClick={handleSharePost}
-                className="flex h-[38px] w-[116px] items-center justify-center gap-[8px] rounded-[999px] border border-[#E4E4E4] bg-white text-[13px] font-medium text-[#707070] shadow-none hover:bg-[#F5F5F5]"
+                className="flex h-[38px] items-center justify-center gap-[6px] rounded-[999px] border border-[#CECECE] bg-white px-[16px] text-[13px] font-medium text-[#707070] shadow-none transition-colors hover:bg-[#F9F5FF]"
               >
                 <img
                   src={linkIcon}
                   alt="공유하기"
-                  className="h-[16px] w-[16px]"
+                  className="h-[16px] w-[16px] shrink-0"
                 />
                 <span className="leading-[16px]">공유하기</span>
               </Button>
@@ -241,13 +239,14 @@ function CommunityDetailPage() {
                   value={commentText}
                   onChange={handleCommentChange}
                 />
+                {/* 등록 Button - Figma 가이드: disabled 회색, enabled 보라 */}
                 <Button
                   type="button"
                   onClick={handleSubmitComment}
                   disabled={isRegisterDisabled}
-                  className={`h-[38px] w-[79px] shrink-0 rounded-[999px] text-[13px] font-semibold shadow-none ${
+                  className={`h-[40px] shrink-0 rounded-[999px] px-[20px] text-[13px] font-semibold shadow-none transition-colors ${
                     isRegisterDisabled
-                      ? 'cursor-not-allowed border border-[#E8E8E8] bg-[#F7F7F7] text-[#CCCCCC]'
+                      ? 'cursor-not-allowed border border-[#E8E8E8] bg-[#F7F7F7] text-[#CECECE]'
                       : 'border border-[#6201E0] bg-white text-[#6201E0] hover:bg-[#F9F5FF]'
                   }`}
                 >
@@ -278,12 +277,13 @@ function CommunityDetailPage() {
                 <span className="text-[18px]">💬</span>
                 <span>댓글 {post.comments.length}개</span>
               </div>
+              {/* 정렬 버튼 - Figma 가이드 참고 */}
               <button
                 type="button"
-                className="flex h-[38px] w-[99px] items-center justify-center gap-[4px] rounded-[999px] border border-[#ECECEC] bg-white text-[13px] text-[#707070] shadow-none hover:border-[#DAD0FF]"
+                className="flex h-[40px] items-center justify-center gap-[6px] rounded-[999px] border border-[#ECECEC] bg-white px-[16px] text-[13px] font-medium text-[#707070] shadow-none transition-colors hover:border-[#DAD0FF] hover:bg-[#FAFAFA]"
               >
                 <span>최신순</span>
-                <span className="text-[11px] leading-[11px]">↕</span>
+                <span className="text-[12px]">↕</span>
               </button>
             </header>
 
