@@ -1,11 +1,12 @@
 // src/pages/communitydetail/communitydetailpage.tsx
 import { useMemo, useState } from 'react';
-import type { ChangeEvent, FocusEvent } from 'react';
 import { useParams } from 'react-router-dom';
+
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { InputGroupCustom } from '@/components/ui/input-group-custom';
 
-import thumbsUpIcon from '@/assets/icon/feathericons/thumbs-up@2x.png';
+import { ThumbsUp } from 'lucide-react';
 import linkIcon from '@/assets/icon/feathericons/link.png';
 
 type CommunityDetailVariant = 'guest' | 'member' | 'author';
@@ -62,9 +63,7 @@ function CommunityDetailPage() {
 
   const [isMentionOpen, setIsMentionOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
-  const [isCommentFocused, setIsCommentFocused] = useState(false);
 
-  // 댓글 삭제 모달용 상태
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [targetCommentId, setTargetCommentId] = useState<number | null>(null);
 
@@ -117,8 +116,7 @@ function CommunityDetailPage() {
     setIsMentionOpen(false);
   };
 
-  const handleCommentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
+  const handleCommentChangeValue = (value: string) => {
     setCommentText(value);
 
     if (value.includes('@')) {
@@ -128,16 +126,6 @@ function CommunityDetailPage() {
     }
   };
 
-  const handleCommentFocus = () => {
-    if (variant === 'guest') return;
-    setIsCommentFocused(true);
-  };
-
-  const handleCommentBlur = (e: FocusEvent<HTMLTextAreaElement>) => {
-    setIsCommentFocused(false);
-  };
-
-  // 댓글 삭제 모달 핸들러
   const handleOpenDeleteDialog = (commentId: number) => {
     setTargetCommentId(commentId);
     setIsDeleteDialogOpen(true);
@@ -156,16 +144,6 @@ function CommunityDetailPage() {
   };
 
   const isCommentEmpty = commentText.trim().length === 0;
-  const isRegisterDisabled = variant === 'guest' || isCommentEmpty;
-
-  const commentBoxBase =
-    'flex h-[80px] items-center gap-[16px] rounded-[16px] px-[24px] transition-colors';
-  const commentBoxStateClass =
-    variant === 'guest'
-      ? 'border border-[#F0F0F0] bg-[#FAFAFA]'
-      : isCommentFocused
-        ? 'border border-[#6201E0] bg-white'
-        : 'border border-[#F1E4FF] bg-white';
 
   return (
     <div className="flex justify-center bg-white pt-[112px] pb-[160px]">
@@ -225,28 +203,26 @@ function CommunityDetailPage() {
             </div>
 
             <div className="flex justify-end gap-[8px]">
+              {/* 좋아요 버튼 - Figma 가이드 반영 */}
               <Button
                 type="button"
                 onClick={handleLikePost}
                 disabled={variant === 'guest'}
-                className={`flex h-[38px] items-center justify-center gap-[6px] rounded-[999px] border px-[12px] text-[13px] font-medium shadow-none transition-colors ${
+                className={`flex h-[38px] items-center justify-center gap-[6px] rounded-[999px] border px-[16px] text-[13px] font-medium shadow-none transition-colors ${
                   variant === 'guest'
-                    ? 'cursor-not-allowed border-[#CECECE] bg-white text-[#BDBDBD]'
-                    : 'border-[#CECECE] bg-white text-[#6201E0] hover:bg-[#F9F5FF]'
+                    ? 'cursor-not-allowed border-[#E0E0E0] bg-[#F5F5F5] text-[#BDBDBD]'
+                    : 'border-[#6201E0] bg-white text-[#6201E0] hover:bg-[#F9F5FF]'
                 }`}
               >
-                <img
-                  src={thumbsUpIcon}
-                  alt="좋아요"
-                  className="h-[16px] w-[16px] shrink-0"
-                />
+                <ThumbsUp className="h-[16px] w-[16px]" />
                 <span className="leading-[16px]">{post.likes}</span>
               </Button>
 
+              {/* 공유하기 버튼 - Figma 가이드 반영 */}
               <Button
                 type="button"
                 onClick={handleSharePost}
-                className="flex h-[38px] items-center justify-center gap-[6px] rounded-[999px] border border-[#CECECE] bg-white px-[16px] text-[13px] font-medium text-[#707070] shadow-none transition-colors hover:bg-[#F9F5FF]"
+                className="flex h-[38px] items-center justify-center gap-[6px] rounded-[999px] border border-[#E0E0E0] bg-white px-[16px] text-[13px] font-medium text-[#A3A3A3] shadow-none transition-colors hover:bg-[#F2F2F2]"
               >
                 <img
                   src={linkIcon}
@@ -266,40 +242,26 @@ function CommunityDetailPage() {
             </div>
 
             <div className="relative">
-              <div className={`${commentBoxBase} ${commentBoxStateClass}`}>
-                <textarea
-                  className="h-full flex-1 resize-none bg-transparent text-[13px] leading-[20px] text-[#121212] placeholder:text-[#CCCCCC] focus:outline-none"
-                  placeholder={
-                    variant === 'guest'
-                      ? '댓글을 작성하려면 로그인이 필요합니다.'
-                      : '따뜻함을 글로 남겨주세요. @닉네임으로 유저를 태그할 수 있습니다.'
-                  }
-                  disabled={variant === 'guest'}
-                  value={commentText}
-                  onChange={handleCommentChange}
-                  onFocus={handleCommentFocus}
-                  onBlur={handleCommentBlur}
-                />
-                <Button
-                  type="button"
-                  onClick={handleSubmitComment}
-                  disabled={isRegisterDisabled}
-                  className={`h-[40px] shrink-0 rounded-[999px] px-[20px] text-[13px] font-semibold shadow-none transition-colors ${
-                    isRegisterDisabled
-                      ? 'cursor-not-allowed border border-[#E8E8E8] bg-[#F7F7F7] text-[#CECECE]'
-                      : 'border border-[#6201E0] bg-white text-[#6201E0] hover:bg-[#F9F5FF]'
-                  }`}
-                >
-                  등록
-                </Button>
-              </div>
+              {/* 공통 댓글 인풋 컴포넌트 */}
+              <InputGroupCustom
+                value={commentText}
+                disabled={variant === 'guest'}
+                placeholder={
+                  variant === 'guest'
+                    ? '댓글을 작성하려면 로그인이 필요합니다.'
+                    : '따뜻함을 글로 남겨주세요. @닉네임으로 유저를 태그할 수 있습니다.'
+                }
+                onChange={handleCommentChangeValue}
+                onSubmit={handleSubmitComment}
+              />
 
+              {/* 댓글 언급 모달 */}
               {isMentionOpen && variant !== 'guest' && (
-                <div className="absolute top-[88px] left-[24px] z-10 mt-[8px] w-[280px] rounded-[16px] border border-[#ECECEC] bg-white p-[12px] shadow-[0_4px_12px_rgba(0,0,0,0.06)]">
+                <div className="absolute top-[128px] left-0 z-10 mt-[8px] w-[280px] rounded-[16px] border border-[#ECECEC] bg-white p-[12px] shadow-[0_4px_12px_rgba(0,0,0,0.06)]">
                   <div className="mb-[8px] text-[12px] font-medium text-[#121212]">
                     유저 선택
                   </div>
-                  <div className="flex flex-wrap gap-[8px]">
+                  <div className="flex max-h-[160px] flex-wrap gap-[8px] overflow-y-auto">
                     <MentionOption nickname="jnubugo" selected />
                     <MentionOption nickname="name2" />
                     <MentionOption nickname="anotherUser" />
