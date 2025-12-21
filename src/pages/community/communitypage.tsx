@@ -5,8 +5,11 @@ import { SearchInput } from '@/components/communitypage/SearchInput';
 import { SearchButton } from '@/components/communitypage/SearchButton';
 import { CommunityPagination } from '@/components/communitypage/Pagination';
 import { ArrayOption } from '@/components/communitypage/ArrayOption';
+import { postList } from '@/mocks/postList';
 
 function CommunityPage() {
+  const postListData = postList.results;
+
   return (
     <div className="mx-auto mt-30 mb-50 flex max-w-[944px] flex-col items-center gap-4">
       <header className="mx-auto flex w-full flex-col gap-4">
@@ -33,11 +36,9 @@ function CommunityPage() {
       </header>
 
       <main className="mb-10 flex flex-col gap-4">
-        <ListCard />
-        <ListCard />
-        <ListCard />
-        <ListCard />
-        <ListCard />
+        {postListData.map((post) => (
+          <ListCard key={post.id} />
+        ))}
         <hr />
       </main>
 
