@@ -7,8 +7,17 @@ import {
   ItemTitle,
 } from '../ui/item';
 import { ThumbsUp } from 'lucide-react';
+import { getRelativeTimeString } from '@/utils/dateUtils';
+import type { PostDTO } from '@/api/model/postDTO';
 
-export function ListCard() {
+interface ListCardProps {
+  post: PostDTO;
+  category: string;
+}
+
+export function ListCard({ post, category }: ListCardProps) {
+  const { title, content_preview, thumbnail_img_url, author, created_at } =
+    post;
   return (
     <div className="flex h-[216px] w-[944px] flex-col gap-4">
       <Item
@@ -20,13 +29,11 @@ export function ListCard() {
           <ItemContent className="h-full">
             <div className="flex flex-col gap-2">
               <ItemDescription className="text-oz-gray-dark text-[12px]">
-                예시 카테고리
+                {category}
               </ItemDescription>
-              <ItemTitle className="text-[18px]">예시 게시글 제목</ItemTitle>
+              <ItemTitle className="text-[18px]">{title}</ItemTitle>
               <ItemDescription className="text-oz-gray w- text-[14px]">
-                예시 게시글 내용 예시 게시글 내용 예시 게시글 내용 예시 게시글
-                내용 예시 게시글 내용 예시 게시글 내용 예시 게시글 내용 예시
-                게시글 내용 예시 게시글 내용 예시 게시글 내용 예시 게시글 내용
+                {content_preview}
               </ItemDescription>
             </div>
             <div className="mt-auto flex w-full items-center justify-between">
@@ -34,31 +41,35 @@ export function ListCard() {
                 <ThumbsUp className="color-oz-gray-white-dark" />
                 <p className="flex gap-1 text-[12px]">
                   <span>좋아요</span>
-                  <span>10</span>
+                  <span>{post.like_count}</span>
                 </p>
                 <p className="flex gap-1 text-[12px]">
                   <span>댓글</span>
-                  <span>10</span>
+                  <span>{post.comment_count}</span>
                 </p>
                 <p className="flex gap-1 text-[12px]">
                   <span>조회수</span>
-                  <span>10</span>
+                  <span>{post.view_count}</span>
                 </p>
               </ItemActions>
               <div className="flex items-center gap-2">
                 <img
-                  src="./src/assets/image.png"
+                  src={author.profile_img_url}
                   alt="예시 게시글 이미지"
                   className="bg-oz-gray-light h-[24px] w-[24px] rounded-full object-cover"
                 />
-                <span className="text-oz-gray-dark text-[12px]">김소원</span>
-                <span className="text-oz-gray text-[12px]">1시간 전</span>
+                <span className="text-oz-gray-dark text-[12px]">
+                  {author.nickname}
+                </span>
+                <span className="text-oz-gray text-[12px]">
+                  {getRelativeTimeString(created_at)}
+                </span>
               </div>
             </div>
           </ItemContent>
           <ItemMedia className="ml-10 h-[168px] w-[228px]">
             <img
-              src="./src/assets/image.png"
+              src={thumbnail_img_url}
               alt="예시 게시글 이미지"
               className="bg-oz-gray-light h-full w-full rounded-lg object-cover"
             />

@@ -9,6 +9,7 @@ export interface PostDTO {
   id: number;
   author: UserDTO;
   title: string;
+  category: string;
   thumbnail_img_url: string;
   content_preview: string;
   comment_count: number;
