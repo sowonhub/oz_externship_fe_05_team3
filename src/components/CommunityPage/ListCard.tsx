@@ -67,13 +67,15 @@ export function ListCard({ post, category }: ListCardProps) {
               </div>
             </div>
           </ItemContent>
-          <ItemMedia className="ml-10 h-[168px] w-[228px]">
-            <img
-              src={thumbnail_img_url}
-              alt="예시 게시글 이미지"
-              className="bg-oz-gray-light h-full w-full rounded-lg object-cover"
-            />
-          </ItemMedia>
+          {thumbnail_img_url && (
+            <ItemMedia className="ml-10 h-[168px] w-[228px]">
+              <img
+                src={thumbnail_img_url}
+                alt="예시 게시글 이미지"
+                className="bg-oz-gray-light h-full w-full rounded-lg object-cover"
+              />
+            </ItemMedia>
+          )}
         </a>
       </Item>
     </div>

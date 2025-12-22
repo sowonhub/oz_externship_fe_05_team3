@@ -15,7 +15,7 @@ export const postList: PostListResponseDTO = {
       },
       title: '테스트 게시글 1번',
       category: '공지사항',
-      thumbnail_img_url: 'https://example.com/uploads/images/posts/post1.png',
+      thumbnail_img_url: '', //'https://example.com/uploads/images/posts/post1.png',
       content_preview: '테스트 게시글 1번의 미리보기 내용입니다.',
       comment_count: 12,
       view_count: 120,
