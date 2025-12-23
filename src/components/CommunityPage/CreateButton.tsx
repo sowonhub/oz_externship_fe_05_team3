@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ROUTES } from '@/routes';
 
 export function CreateButton() {
   return (
-    <Link to="/community/create" className="">
+    <Link to={ROUTES.COMMUNITY_CREATE} className="">
       <Button variant="default" className="h-[48px] w-[120px] text-[16px]">
         <Pencil className="size-5" />
         글쓰기
