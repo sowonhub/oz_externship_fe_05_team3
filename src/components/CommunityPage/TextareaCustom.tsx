@@ -1,6 +1,6 @@
 import { InputGroup, InputGroupAddon } from '@/components/ui/input-group';
 import TextareaAutosize from 'react-textarea-autosize';
-import { InputGroupButton } from './input-group';
+import { InputGroupButton } from '../ui/input-group';
 
 export function InputGroupCustom() {
   return (
