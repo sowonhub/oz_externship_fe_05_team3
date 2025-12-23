@@ -7,7 +7,7 @@ import {
   ItemTitle,
 } from '../ui/item';
 import { ThumbsUp } from 'lucide-react';
-import { getRelativeTimeString } from '@/utils/dateUtils';
+import { dayFormatter } from '@/utils/dateUtils';
 import type { PostDTO } from '@/api/model/postDTO';
 
 interface ListCardProps {
@@ -62,7 +62,7 @@ export function ListCard({ post, category }: ListCardProps) {
                   {author.nickname}
                 </span>
                 <span className="text-oz-gray text-[12px]">
-                  {getRelativeTimeString(created_at)}
+                  {dayFormatter(created_at)}
                 </span>
               </div>
             </div>

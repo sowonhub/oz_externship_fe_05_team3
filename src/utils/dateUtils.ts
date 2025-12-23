@@ -1,5 +1,5 @@
 // 날짜 포맷팅 함수
-export function getRelativeTimeString(dataString: string): string {
+export function dayFormatter(dataString: string): string {
   const date = new Date(dataString);
   const now = new Date();
   const diff = now.getTime() - date.getTime();
