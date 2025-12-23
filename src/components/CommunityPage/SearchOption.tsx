@@ -8,6 +8,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+const searchFilter = [
+  { value: 'author', label: '작성자' },
+  { value: 'title', label: '제목' },
+  { value: 'content', label: '내용' },
+  { value: 'title_or_content', label: '제목 또는 내용' },
+];
+
 export function SearchOption() {
   return (
     <Select>
@@ -17,9 +24,11 @@ export function SearchOption() {
       <SelectContent>
         <SelectGroup className="">
           <SelectLabel>검색 유형</SelectLabel>
-          <SelectItem value="title">제목</SelectItem>
-          <SelectItem value="content">내용</SelectItem>
-          <SelectItem value="author">작성자</SelectItem>
+          {searchFilter.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>
