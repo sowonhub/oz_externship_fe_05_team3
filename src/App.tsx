@@ -4,8 +4,6 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
 import './App.css';
 
-<<<<<<< HEAD
-=======
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -16,7 +14,6 @@ const queryClient = new QueryClient({
   },
 });
 
->>>>>>> db703e4 (feat: 커뮤니티 상세 페이지 완성)
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
