@@ -77,8 +77,8 @@ function CommunityDetailPage() {
   // API 훅 호출
   const {
     comments: apiComments,
-    commentsCount,
-    isLoading: isApiLoading,
+    // commentsCount,
+    // isLoading: isApiLoading,
     createComment,
     isCreating,
     deleteComment,
@@ -117,16 +117,7 @@ function CommunityDetailPage() {
       Array.from({ length: 50 }, (_, i) => ({
         id: i + 1,
         author: {
-          nickname: [
-            '안지선',
-            '김소원',
-            '나원국',
-            '박민수',
-            '이지은',
-            '최준호',
-            '정수진',
-            '강민지',
-          ][i % 8],
+          nickname: ['안지선', '김소원', '나원국'][i % 3],
           profileImageUrl: '',
         },
         content: [
@@ -269,7 +260,7 @@ function CommunityDetailPage() {
               구인 / 협업
             </div>
 
-            {/* 라인2: 제목(왼쪽) + 프로필+닉네임(오른쪽) */}
+            {/* 라인2: 제목(왼쪽) + 프로필+닉네임*/}
             <div className="mb-[16px] flex items-start justify-between gap-[24px]">
               <h1 className="flex-1 text-[28px] leading-[37px] font-bold text-[#121212]">
                 {post.title}
@@ -469,7 +460,7 @@ function CommunityDetailPage() {
                 <div className="py-[24px] text-center">
                   <div className="inline-flex items-center gap-[8px] rounded-[999px] bg-[#F7F7F7] px-[16px] py-[8px]">
                     <span className="text-[13px] text-[#9D9D9D]">
-                      ✅ 모든 댓글을 확인했습니다
+                      모든 댓글을 확인했습니다
                     </span>
                   </div>
                 </div>
