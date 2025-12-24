@@ -4,6 +4,9 @@ export const ROUTES = {
   COMMUNITY_DETAIL: '/community/:id',
   COMMUNITY_CREATE: '/community/create',
   COMMUNITY_EDIT: '/community/edit/:id',
+  QUESTION: '/question',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
 } as const;
 
 // 동적 경로 생성 헬퍼 함수

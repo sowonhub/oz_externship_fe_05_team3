@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { useAuthStore } from '@/store';
+import { ROUTES } from '@/routes';
 
 export const NavigationBar = () => {
   const { user } = useAuthStore();
@@ -16,19 +17,18 @@ export const NavigationBar = () => {
         <div className="flex w-[1200px] min-w-[960px] items-center justify-between px-4">
           <div className="flex items-center justify-start gap-20">
             <Link
-              to="/community"
+              to={ROUTES.COMMUNITY}
               className="flex items-center justify-center font-black"
             >
-              <p className="text-oz-blue-normal text-[22px]">OZ</p>
-              <p className="text-oz-purple-normal text-[22px]">.</p>
               <p className="text-oz-blue-normal text-[22px]">
+                OZ<span className="text-oz-purple-normal">.</span>
                 &nbsp;오즈코딩스쿨
               </p>
             </Link>
-            <Link to="/community" className="text-[18px]">
+            <Link to={ROUTES.COMMUNITY} className="text-[18px]">
               커뮤니티
             </Link>
-            <Link to="/question" className="text-[18px]">
+            <Link to={ROUTES.QUESTION} className="text-[18px]">
               질의응답
             </Link>
           </div>
@@ -44,11 +44,17 @@ export const NavigationBar = () => {
                 </Link>
               ) : (
                 <span className="text-oz-gray-dark flex items-center justify-center gap-2 text-[16px]">
-                  <Link to="/login" className="content-center text-[16px]">
+                  <Link
+                    to={ROUTES.LOGIN}
+                    className="content-center text-[16px]"
+                  >
                     로그인
                   </Link>
                   <p className="text-[16px]">|</p>
-                  <Link to="/register" className="content-center text-[16px]">
+                  <Link
+                    to={ROUTES.SIGNUP}
+                    className="content-center text-[16px]"
+                  >
                     회원가입
                   </Link>
                 </span>
