@@ -1,9 +1,19 @@
 // src/router.tsx
 import { ROUTES } from '@/routes';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
 import CommunityPage from '@/pages/community/communitypage';
 import CommunityDetailPage from '@/pages/communitydetail/communitydetailpage';
 import CommunityCreatePage from '@/pages/communitycreate/communitycreatepage';
+import { NavigationBar } from '@/components/CommunityPage/NavigationBar';
+
+const CommunityLayout = () => {
+  return (
+    <div>
+      <NavigationBar />
+      <Outlet />
+    </div>
+  );
+};
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +29,7 @@ export const router = createBrowserRouter([
   },
   {
     path: ROUTES.COMMUNITY, // '/community' → 상수 사용
+    element: <CommunityLayout />,
     children: [
       {
         index: true,

@@ -24,3 +24,35 @@ export interface UserDTO {
   nickname: string;
   profile_img_url: string;
 }
+
+export interface AuthDTO {
+  user: UserDTO | null;
+  isAuthenticated: boolean;
+  login: (user: UserDTO) => void;
+  logout: () => void;
+}
+
+export enum ComunitySearchFilter {
+  AUTHOR = 'author',
+  TITLE = 'title',
+  CONTENT = 'content',
+  TITLE_OR_CONTENT = 'title_or_content',
+}
+
+export enum ComunitySearchSort {
+  LATEST = 'lastest',
+  OLDEST = 'oldest',
+  MOST_VIEWS = 'most_views',
+  MOST_LIKES = 'most_likes',
+  MOST_COMMENTS = 'most_comments',
+}
+
+export type SearchComunity =
+  | {
+      page?: number;
+      search?: string;
+      search_filter?: ComunitySearchFilter;
+      category_id?: number;
+      sort?: ComunitySearchSort;
+    }
+  | undefined;

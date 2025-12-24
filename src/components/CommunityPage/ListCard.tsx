@@ -9,6 +9,7 @@ import {
 import { ThumbsUp } from 'lucide-react';
 import { dayFormatter } from '@/utils/dateUtils';
 import type { PostDTO } from '@/api/model/postDTO';
+import { useAuthStore } from '@/store';
 
 interface ListCardProps {
   post: PostDTO;
@@ -18,6 +19,7 @@ interface ListCardProps {
 export function ListCard({ post, category }: ListCardProps) {
   const { title, content_preview, thumbnail_img_url, author, created_at } =
     post;
+  const { user } = useAuthStore();
   return (
     <div className="flex h-[216px] w-[944px] flex-col gap-4">
       <Item
@@ -54,7 +56,7 @@ export function ListCard({ post, category }: ListCardProps) {
               </ItemActions>
               <div className="flex items-center gap-2">
                 <img
-                  src={author.profile_img_url}
+                  src={user?.profile_img_url ?? '/src/assets/user.png'}
                   alt="예시 게시글 이미지"
                   className="bg-oz-gray-light h-[24px] w-[24px] rounded-full object-cover"
                 />
