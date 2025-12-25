@@ -1,6 +1,6 @@
 // src/pages/communitydetail/communitydetailpage.tsx
 import { useEffect, useMemo, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useInView } from 'react-intersection-observer';
 
 import { Button } from '@/components/ui/button';
