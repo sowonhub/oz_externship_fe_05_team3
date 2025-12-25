@@ -8,7 +8,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // TODO: 공통 에러 처리
+    /* TODO: 공통 에러 처리 */
     return Promise.reject(error);
   }
 );
