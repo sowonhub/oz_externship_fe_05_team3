@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const apiClient = axios.create({
+const apiClient = axios.create({
   baseURL: '/api/v1', // 실제 프로젝트 설정에 맞게 수정
   withCredentials: true,
 });
@@ -12,3 +12,5 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export default apiClient;
