@@ -1,12 +1,12 @@
-import { apiClient } from '@/api/apiclient';
+import { apiClient } from '@/api/index';
 import type {
   Comment,
   CommentListResponse,
   CreateCommentRequest,
   UpdateCommentRequest,
-} from '@/types/api';
+} from '@/types-interface/api';
 
-export const commentService = {
+const commentService = {
   getComments(postId: number, page = 1, pageSize = 100) {
     return apiClient
       .get<CommentListResponse>(`/posts/${postId}/comments`, {
@@ -33,3 +33,5 @@ export const commentService = {
       .then((res) => res.data);
   },
 };
+
+export default commentService;

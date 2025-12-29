@@ -1,1 +1,1 @@
-export { useComments } from '@/comment/queries';
+export { useComments } from '@/comment/index';

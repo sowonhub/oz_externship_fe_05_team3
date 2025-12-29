@@ -3,13 +3,17 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { useParams } from 'react-router';
 import { useInView } from 'react-intersection-observer';
 
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { InputGroupCustom } from '@/components/ui/input-group-custom';
+import {
+  Button,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  InputGroupCustom,
+} from '@/lib/index';
 import { ThumbsUp } from 'lucide-react';
 
 import { useComments } from '@/hooks/usecomments';
-import { formatDate } from '@/lib/formatdate';
+import { formatDate } from '@/utils/index';
 import linkIcon from '@/assets/icon/feathericons/link.png';
 
 type CommunityDetailVariant = 'guest' | 'member' | 'author';

@@ -9,7 +9,7 @@ async function enableMocking() {
     return;
   }
 
-  const { worker } = await import('./mocks/browser');
+  const { worker } = await import('@/mocks/index');
 
   return worker.start({
     onUnhandledRequest: 'bypass', // 다른 API 요청은 그대로 통과
