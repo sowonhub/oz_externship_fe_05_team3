@@ -16,7 +16,7 @@ import { useTextEditor } from '@/hooks/tiptap';
 import { useState } from 'react';
 
 function CommunityCreatePage() {
-  const [title, setTitle] = useState('');
+  // const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [content, setContent] = useState('');
 
@@ -27,6 +27,7 @@ function CommunityCreatePage() {
     },
   });
 
+  console.log(categoryId, content);
   return (
     <div className="flex flex-col items-center px-10 lg:px-0">
       <div className="w-full max-w-[944px]">

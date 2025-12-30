@@ -10,12 +10,10 @@ import {
   Bold,
   ChevronDown,
   Eraser,
-  Highlighter,
   ImageIcon,
   Italic,
   LinkIcon,
   List,
-  Palette,
   RotateCcw,
   RotateCw,
   Strikethrough,
@@ -56,7 +54,7 @@ const fonts = [
 const sizes = ['12', '14', '16', '18', '24', '32'];
 
 const colorChips = ['#111827', '#2563EB', '#DC2626', '#16A34A'];
-const bgChips = ['#DBEAFE', '#FEF3C7', '#DCFCE7', '#FCE7F3', '#FFFFFF'];
+// const bgChips = ['#DBEAFE', '#FEF3C7', '#DCFCE7', '#FCE7F3', '#FFFFFF'];
 
 const lineHeights = [
   { label: '1', value: '1' },
@@ -68,7 +66,7 @@ const ToolBar = ({ editor }: { editor: any }) => {
   const [font, setFont] = useState('');
   const [size, setSize] = useState('16');
   const [textColor, setTextColor] = useState('#111827');
-  const [bgColor, setBgColor] = useState('#DBEAFE');
+  // const [bgColor, setBgColor] = useState('#DBEAFE');
 
   if (!editor) return null;
 
@@ -91,10 +89,10 @@ const ToolBar = ({ editor }: { editor: any }) => {
     editor.chain().focus().setColor(c).run();
   };
 
-  const applyBgColor = (c: string) => {
-    setBgColor(c);
-    editor.chain().focus().setHighlight({ color: c }).run();
-  };
+  // const applyBgColor = (c: string) => {
+  //   setBgColor(c);
+  //   editor.chain().focus().setHighlight({ color: c }).run();
+  // };
 
   const applyLineHeight = (v: string) => {
     editor.chain().focus().setLineHeight(v).run();
