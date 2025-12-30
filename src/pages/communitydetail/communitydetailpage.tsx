@@ -77,10 +77,10 @@ function CommunityDetailPage() {
   // API 훅 호출
   const {
     comments: apiComments,
-    // commentsCount,
-    // isLoading: isApiLoading,
     createComment,
     isCreating,
+    updateComment,
+    isUpdating,
     deleteComment,
     isDeleting,
   } = useComments(Number(id));
@@ -100,10 +100,14 @@ function CommunityDetailPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [targetCommentId, setTargetCommentId] = useState<number | null>(null);
 
+  // 댓글 수정 상태
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingContent, setEditingContent] = useState('');
+
   // 무한스크롤 상태 (5개씩 로딩)
   const [page, setPage] = useState(1);
   const pageSize = 5;
-  const [visibleComments, setVisibleComments] = useState<Comment[]>([]);
+  const [displayedComments, setDisplayedComments] = useState<Comment[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { ref: loadMoreRef, inView } = useInView({ threshold: 0.1 });
@@ -157,7 +161,6 @@ function CommunityDetailPage() {
       views: 60,
       likes: 2,
       createdAt: '15시간 전',
-      // API 데이터가 있으면 API, 없으면 더미 사용
       comments:
         convertedComments.length > 0 ? convertedComments : dummyComments,
     }),
@@ -166,26 +169,25 @@ function CommunityDetailPage() {
 
   // 초기 댓글 페이지 설정
   useEffect(() => {
-    setVisibleComments(post.comments.slice(0, pageSize));
+    setDisplayedComments(post.comments.slice(0, pageSize));
     setPage(1);
     setHasMore(post.comments.length > pageSize);
   }, [post.comments]);
 
-  // inView 되면 다음 페이지 로딩 (로딩 인디케이터 개선)
+  // inView 되면 다음 페이지 로딩
   useEffect(() => {
     if (!inView || loadingRef.current || !hasMore) return;
 
     loadingRef.current = true;
     setIsLoadingMore(true);
 
-    // 로딩 효과를 위한 딜레이
     setTimeout(() => {
       const nextPage = page + 1;
       const start = (nextPage - 1) * pageSize;
       const end = start + pageSize;
       const nextSlice = post.comments.slice(start, end);
 
-      setVisibleComments((prev) => [...prev, ...nextSlice]);
+      setDisplayedComments((prev) => [...prev, ...nextSlice]);
       setPage(nextPage);
       setHasMore(end < post.comments.length);
 
@@ -207,15 +209,9 @@ function CommunityDetailPage() {
     if (variant === 'guest') return;
     if (!commentText.trim()) return;
 
-    createComment(
-      { content: commentText },
-      {
-        onSuccess: () => {
-          setCommentText('');
-          setIsMentionOpen(false);
-        },
-      }
-    );
+    createComment({ content: commentText });
+    setCommentText('');
+    setIsMentionOpen(false);
   };
 
   const handleCommentChangeValue = (value: string) => {
@@ -241,26 +237,43 @@ function CommunityDetailPage() {
   const handleConfirmDeleteComment = () => {
     if (targetCommentId == null) return;
 
-    deleteComment(targetCommentId, {
-      onSuccess: () => {
-        setIsDeleteDialogOpen(false);
-        setTargetCommentId(null);
-      },
+    deleteComment(targetCommentId);
+    setIsDeleteDialogOpen(false);
+    setTargetCommentId(null);
+  };
+
+  // 댓글 수정 핸들러
+  const handleStartEdit = (comment: Comment) => {
+    setEditingCommentId(comment.id);
+    setEditingContent(comment.content);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingContent('');
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingContent.trim() || editingCommentId === null) return;
+
+    updateComment({
+      commentId: editingCommentId,
+      data: { content: editingContent },
     });
+
+    setEditingCommentId(null);
+    setEditingContent('');
   };
 
   return (
     <div className="flex justify-center bg-white pt-[112px] pb-[160px]">
       <main className="w-full max-w-[944px] px-[24px]">
         <section>
-          {/* 상단: 카테고리 / 제목 / 메타 / 작성자 */}
           <header className="border-b border-[#ECECEC] pb-[32px]">
-            {/* 라인1: 카테고리 */}
             <div className="mb-[12px] text-[13px] font-semibold text-[#6B21A8]">
               구인 / 협업
             </div>
 
-            {/* 라인2: 제목(왼쪽) + 프로필+닉네임*/}
             <div className="mb-[16px] flex items-start justify-between gap-[24px]">
               <h1 className="flex-1 text-[28px] leading-[37px] font-bold text-[#121212]">
                 {post.title}
@@ -279,7 +292,6 @@ function CommunityDetailPage() {
               </div>
             </div>
 
-            {/* 라인3: 메타정보(왼쪽) + 수정/삭제(오른쪽) */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[12px] text-[13px] text-[#9D9D9D]">
                 <span>조회수 {post.views}</span>
@@ -289,7 +301,6 @@ function CommunityDetailPage() {
 
               {variant === 'author' && (
                 <div className="flex items-center gap-[4px] text-[12px]">
-                  <span className="text-[#CCCCCC]"></span>
                   <button
                     type="button"
                     className="text-[#6B21A8] hover:text-[#5201C0] hover:underline"
@@ -308,7 +319,6 @@ function CommunityDetailPage() {
             </div>
           </header>
 
-          {/* 본문 + 좋아요/공유하기 */}
           <section className="border-b border-[#ECECEC] pt-[32px] pb-[32px]">
             <div className="mb-[32px]">
               <p className="text-[14px] leading-[22px] break-words whitespace-pre-wrap text-[#4D4D4D]">
@@ -346,7 +356,6 @@ function CommunityDetailPage() {
             </div>
           </section>
 
-          {/* 개인정보 안내 + 댓글 입력 */}
           <section className="border-b border-[#ECECEC] pt-[40px] pb-[32px]">
             <div className="mb-[20px] rounded-[12px] border border-[#F0F0F0] bg-[#FAFAFA] px-[20px] py-[14px] text-[12px] leading-[18px] text-[#9D9D9D]">
               개인정보를 공유 및 요청하거나, 명예 훼손, 무단 광고, 불법 정보
@@ -381,7 +390,6 @@ function CommunityDetailPage() {
             </div>
           </section>
 
-          {/* 댓글 목록 + 정렬 버튼 */}
           <section className="pt-[32px]">
             <header className="mb-[20px] flex items-center justify-between">
               <div className="flex items-center gap-[6px] text-[14px] font-semibold text-[#121212]">
@@ -398,72 +406,126 @@ function CommunityDetailPage() {
             </header>
 
             <div>
-              {visibleComments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className="animate-fadeIn flex items-start gap-[12px] border-b border-[#F7F7F7] py-[16px] last:border-b-0"
-                >
-                  <Avatar className="h-[40px] w-[40px] shrink-0">
-                    <AvatarImage src={comment.author.profileImageUrl} />
-                    <AvatarFallback className="bg-[#F5ECFF] text-[14px] font-semibold text-[#6B21A8]">
-                      {comment.author.nickname[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="mb-[6px] flex items-center gap-[8px]">
-                      <span className="text-[13px] font-semibold text-[#121212]">
-                        {comment.author.nickname}
-                      </span>
-                      <span className="text-[11px] text-[#BDBDBD]">
-                        {comment.createdAt}
-                      </span>
-                      {variant === 'author' && (
-                        <button
-                          type="button"
-                          onClick={() => handleOpenDeleteDialog(comment.id)}
-                          className="text-[11px] text-[#BDBDBD] hover:text-[#6201E0] hover:underline"
-                          disabled={isDeleting}
-                        >
-                          삭제
-                        </button>
+              {displayedComments.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-[80px]">
+                  <div className="mb-[16px] text-[48px]">💬</div>
+                  <p className="text-[14px] text-[#9D9D9D]">
+                    아직 댓글이 없습니다. 첫 댓글을 작성해보세요!
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {displayedComments.map((comment) => (
+                    <div
+                      key={comment.id}
+                      className="animate-fadeIn flex items-start gap-[12px] border-b border-[#F7F7F7] py-[16px] last:border-b-0"
+                    >
+                      <Avatar className="h-[40px] w-[40px] shrink-0">
+                        <AvatarImage src={comment.author.profileImageUrl} />
+                        <AvatarFallback className="bg-[#F5ECFF] text-[14px] font-semibold text-[#6B21A8]">
+                          {comment.author.nickname[0]}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="flex-1">
+                        {editingCommentId === comment.id ? (
+                          <div className="space-y-2">
+                            <textarea
+                              value={editingContent}
+                              onChange={(e) =>
+                                setEditingContent(e.target.value)
+                              }
+                              className="min-h-[80px] w-full resize-none rounded-[8px] border border-[#E4E4E4] px-[12px] py-[8px] text-[13px] focus:border-[#6201E0] focus:outline-none"
+                              disabled={isUpdating}
+                            />
+                            <div className="flex gap-[8px]">
+                              <button
+                                onClick={handleSaveEdit}
+                                disabled={isUpdating || !editingContent.trim()}
+                                className="rounded-[6px] bg-[#6201E0] px-[12px] py-[6px] text-[12px] text-white hover:bg-[#5201C0] disabled:bg-[#E0E0E0]"
+                              >
+                                {isUpdating ? '저장 중...' : '저장'}
+                              </button>
+                              <button
+                                onClick={handleCancelEdit}
+                                disabled={isUpdating}
+                                className="rounded-[6px] border border-[#E4E4E4] px-[12px] py-[6px] text-[12px] text-[#707070] hover:bg-[#F7F7F7]"
+                              >
+                                취소
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="mb-[6px] flex items-center gap-[8px]">
+                              <span className="text-[13px] font-semibold text-[#121212]">
+                                {comment.author.nickname}
+                              </span>
+                              <span className="text-[11px] text-[#BDBDBD]">
+                                {comment.createdAt}
+                              </span>
+                              {variant === 'author' && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleStartEdit(comment)}
+                                    className="text-[11px] text-[#BDBDBD] hover:text-[#6201E0] hover:underline"
+                                    disabled={isDeleting || isUpdating}
+                                  >
+                                    수정
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleOpenDeleteDialog(comment.id)
+                                    }
+                                    className="text-[11px] text-[#BDBDBD] hover:text-[#6201E0] hover:underline"
+                                    disabled={isDeleting || isUpdating}
+                                  >
+                                    삭제
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                            <p className="text-[13px] leading-[20px] text-[#4D4D4D]">
+                              {comment.content}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {hasMore && (
+                    <div
+                      ref={loadMoreRef}
+                      className="flex items-center justify-center py-[24px]"
+                    >
+                      {isLoadingMore ? (
+                        <div className="flex flex-col items-center gap-[12px]">
+                          <div className="h-[32px] w-[32px] animate-spin rounded-full border-4 border-[#F0E5FF] border-t-[#6201E0]" />
+                          <span className="text-[13px] font-medium text-[#6201E0]">
+                            댓글을 불러오는 중...
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-[13px] text-[#BDBDBD]">
+                          스크롤하여 더보기
+                        </span>
                       )}
                     </div>
-                    <p className="text-[13px] leading-[20px] text-[#4D4D4D]">
-                      {comment.content}
-                    </p>
-                  </div>
-                </div>
-              ))}
-
-              {/* 로딩 인디케이터 */}
-              {hasMore && (
-                <div
-                  ref={loadMoreRef}
-                  className="flex items-center justify-center py-[24px]"
-                >
-                  {isLoadingMore ? (
-                    <div className="flex flex-col items-center gap-[12px]">
-                      <div className="h-[32px] w-[32px] animate-spin rounded-full border-4 border-[#F0E5FF] border-t-[#6201E0]" />
-                      <span className="text-[13px] font-medium text-[#6201E0]">
-                        댓글을 불러오는 중...
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-[13px] text-[#BDBDBD]">
-                      스크롤하여 더보기
-                    </span>
                   )}
-                </div>
-              )}
 
-              {!hasMore && visibleComments.length > 0 && (
-                <div className="py-[24px] text-center">
-                  <div className="inline-flex items-center gap-[8px] rounded-[999px] bg-[#F7F7F7] px-[16px] py-[8px]">
-                    <span className="text-[13px] text-[#9D9D9D]">
-                      모든 댓글을 확인했습니다
-                    </span>
-                  </div>
-                </div>
+                  {!hasMore && displayedComments.length > 0 && (
+                    <div className="py-[24px] text-center">
+                      <div className="inline-flex items-center gap-[8px] rounded-[999px] bg-[#F7F7F7] px-[16px] py-[8px]">
+                        <span className="text-[13px] text-[#9D9D9D]">
+                          모든 댓글을 확인했습니다
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </section>
