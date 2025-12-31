@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { commentService } from '@/comment/services';
+import { commentService } from '@/api/comment/services';
 import type { CreateCommentRequest, UpdateCommentRequest } from '@/types/api';
 
 export const useComments = (postId: number) => {
