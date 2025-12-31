@@ -1,6 +1,6 @@
 // src/stores/comment/useCommentStore.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { commentService } from '@/comment/services';
+import { commentService } from '@/api/comment/services';
 import type {
   CommentListResponse,
   CreateCommentRequest,
