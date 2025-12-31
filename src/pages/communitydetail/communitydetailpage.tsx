@@ -1,12 +1,14 @@
 // src/pages/communitydetail/communitydetailpage.tsx
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useInView } from 'react-intersection-observer';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { InputGroupCustom } from '@/components/ui/input-group-custom';
 import { ThumbsUp } from 'lucide-react';
+
+import { CommentForm } from '@/components/CommunityDetailPage/CommentForm/CommentForm';
+import { CommentList } from '@/components/CommunityDetailPage/CommentList/CommentList';
+import { DeleteDialog } from '@/components/CommunityDetailPage/CommentList/DeleteDialog';
 
 import { useComments } from '@/hooks/usecomments';
 import { formatDate } from '@/lib/formatdate';
@@ -37,25 +39,6 @@ interface Post {
   likes: number;
   createdAt: string;
   comments: Comment[];
-}
-
-interface MentionOptionProps {
-  nickname: string;
-  selected?: boolean;
-}
-
-function MentionOption({ nickname, selected }: MentionOptionProps) {
-  const base =
-    'flex h-[24px] items-center rounded-[999px] border px-[10px] text-[12px] transition-colors cursor-pointer';
-  const stateClass = selected
-    ? 'border-[#6201E0] bg-[#F0E5FF] text-[#6201E0]'
-    : 'border-[#E4E4E4] bg-white text-[#4D4D4D] hover:border-[#DAD0FF] hover:bg-[#F9F5FF]';
-
-  return (
-    <button type="button" className={`${base} ${stateClass}`}>
-      @{nickname}
-    </button>
-  );
 }
 
 // 타입 어댑터 함수
@@ -93,9 +76,6 @@ function CommunityDetailPage() {
 
   const [variant] = useState<CommunityDetailVariant>('author');
 
-  const [isMentionOpen, setIsMentionOpen] = useState(false);
-  const [commentText, setCommentText] = useState('');
-
   // 댓글 삭제 모달 상태
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [targetCommentId, setTargetCommentId] = useState<number | null>(null);
@@ -110,10 +90,6 @@ function CommunityDetailPage() {
   const [displayedComments, setDisplayedComments] = useState<Comment[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const { ref: loadMoreRef, inView } = useInView({ threshold: 0.1 });
-
-  // 무한스크롤 로딩 상태 관리용 ref
-  const loadingRef = useRef(false);
 
   // 테스트용 더미 댓글 50개
   const dummyComments: Comment[] = useMemo(
@@ -174,11 +150,8 @@ function CommunityDetailPage() {
     setHasMore(post.comments.length > pageSize);
   }, [post.comments]);
 
-  // inView 되면 다음 페이지 로딩
-  useEffect(() => {
-    if (!inView || loadingRef.current || !hasMore) return;
-
-    loadingRef.current = true;
+  // 무한스크롤 로드 더보기
+  const handleLoadMore = () => {
     setIsLoadingMore(true);
 
     setTimeout(() => {
@@ -192,9 +165,8 @@ function CommunityDetailPage() {
       setHasMore(end < post.comments.length);
 
       setIsLoadingMore(false);
-      loadingRef.current = false;
     }, 500);
-  }, [inView, hasMore, page, post.comments]);
+  };
 
   const handleLikePost = () => {
     if (variant === 'guest') return;
@@ -205,23 +177,9 @@ function CommunityDetailPage() {
     console.log('공유하기');
   };
 
-  const handleSubmitComment = () => {
+  const handleSubmitComment = (content: string) => {
     if (variant === 'guest') return;
-    if (!commentText.trim()) return;
-
-    createComment({ content: commentText });
-    setCommentText('');
-    setIsMentionOpen(false);
-  };
-
-  const handleCommentChangeValue = (value: string) => {
-    setCommentText(value);
-
-    if (value.includes('@')) {
-      setIsMentionOpen(true);
-    } else {
-      setIsMentionOpen(false);
-    }
+    createComment({ content });
   };
 
   const handleOpenDeleteDialog = (commentId: number) => {
@@ -362,32 +320,16 @@ function CommunityDetailPage() {
               유포시 모니터링 후 삭제될 수 있습니다.
             </div>
 
-            <div className="relative">
-              <InputGroupCustom
-                value={commentText}
-                disabled={variant === 'guest' || isCreating}
-                placeholder={
-                  variant === 'guest'
-                    ? '댓글을 작성하려면 로그인이 필요합니다.'
-                    : '따뜻함을 글로 남겨주세요. @닉네임으로 유저를 태그할 수 있습니다.'
-                }
-                onChange={handleCommentChangeValue}
-                onSubmit={handleSubmitComment}
-              />
-
-              {isMentionOpen && variant !== 'guest' && (
-                <div className="absolute top-[128px] left-0 z-10 mt-[8px] w-[280px] rounded-[16px] border border-[#ECECEC] bg-white p-[12px] shadow-[0_4px_12px_rgba(0,0,0,0.06)]">
-                  <div className="mb-[8px] text-[12px] font-medium text-[#121212]">
-                    유저 선택
-                  </div>
-                  <div className="flex max-h-[160px] flex-wrap gap-[8px] overflow-y-auto">
-                    <MentionOption nickname="jnubugo" selected />
-                    <MentionOption nickname="name2" />
-                    <MentionOption nickname="anotherUser" />
-                  </div>
-                </div>
-              )}
-            </div>
+            <CommentForm
+              disabled={variant === 'guest'}
+              isCreating={isCreating}
+              placeholder={
+                variant === 'guest'
+                  ? '댓글을 작성하려면 로그인이 필요합니다.'
+                  : '따뜻함을 글로 남겨주세요. @닉네임으로 유저를 태그할 수 있습니다.'
+              }
+              onSubmit={handleSubmitComment}
+            />
           </section>
 
           <section className="pt-[32px]">
@@ -406,158 +348,33 @@ function CommunityDetailPage() {
             </header>
 
             <div>
-              {displayedComments.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-[80px]">
-                  <div className="mb-[16px] text-[48px]">💬</div>
-                  <p className="text-[14px] text-[#9D9D9D]">
-                    아직 댓글이 없습니다. 첫 댓글을 작성해보세요!
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {displayedComments.map((comment) => (
-                    <div
-                      key={comment.id}
-                      className="animate-fadeIn flex items-start gap-[12px] border-b border-[#F7F7F7] py-[16px] last:border-b-0"
-                    >
-                      <Avatar className="h-[40px] w-[40px] shrink-0">
-                        <AvatarImage src={comment.author.profileImageUrl} />
-                        <AvatarFallback className="bg-[#F5ECFF] text-[14px] font-semibold text-[#6B21A8]">
-                          {comment.author.nickname[0]}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="flex-1">
-                        {editingCommentId === comment.id ? (
-                          <div className="space-y-2">
-                            <textarea
-                              value={editingContent}
-                              onChange={(e) =>
-                                setEditingContent(e.target.value)
-                              }
-                              className="min-h-[80px] w-full resize-none rounded-[8px] border border-[#E4E4E4] px-[12px] py-[8px] text-[13px] focus:border-[#6201E0] focus:outline-none"
-                              disabled={isUpdating}
-                            />
-                            <div className="flex gap-[8px]">
-                              <button
-                                onClick={handleSaveEdit}
-                                disabled={isUpdating || !editingContent.trim()}
-                                className="rounded-[6px] bg-[#6201E0] px-[12px] py-[6px] text-[12px] text-white hover:bg-[#5201C0] disabled:bg-[#E0E0E0]"
-                              >
-                                {isUpdating ? '저장 중...' : '저장'}
-                              </button>
-                              <button
-                                onClick={handleCancelEdit}
-                                disabled={isUpdating}
-                                className="rounded-[6px] border border-[#E4E4E4] px-[12px] py-[6px] text-[12px] text-[#707070] hover:bg-[#F7F7F7]"
-                              >
-                                취소
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="mb-[6px] flex items-center gap-[8px]">
-                              <span className="text-[13px] font-semibold text-[#121212]">
-                                {comment.author.nickname}
-                              </span>
-                              <span className="text-[11px] text-[#BDBDBD]">
-                                {comment.createdAt}
-                              </span>
-                              {variant === 'author' && (
-                                <>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleStartEdit(comment)}
-                                    className="text-[11px] text-[#BDBDBD] hover:text-[#6201E0] hover:underline"
-                                    disabled={isDeleting || isUpdating}
-                                  >
-                                    수정
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleOpenDeleteDialog(comment.id)
-                                    }
-                                    className="text-[11px] text-[#BDBDBD] hover:text-[#6201E0] hover:underline"
-                                    disabled={isDeleting || isUpdating}
-                                  >
-                                    삭제
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                            <p className="text-[13px] leading-[20px] text-[#4D4D4D]">
-                              {comment.content}
-                            </p>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-
-                  {hasMore && (
-                    <div
-                      ref={loadMoreRef}
-                      className="flex items-center justify-center py-[24px]"
-                    >
-                      {isLoadingMore ? (
-                        <div className="flex flex-col items-center gap-[12px]">
-                          <div className="h-[32px] w-[32px] animate-spin rounded-full border-4 border-[#F0E5FF] border-t-[#6201E0]" />
-                          <span className="text-[13px] font-medium text-[#6201E0]">
-                            댓글을 불러오는 중...
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-[13px] text-[#BDBDBD]">
-                          스크롤하여 더보기
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {!hasMore && displayedComments.length > 0 && (
-                    <div className="py-[24px] text-center">
-                      <div className="inline-flex items-center gap-[8px] rounded-[999px] bg-[#F7F7F7] px-[16px] py-[8px]">
-                        <span className="text-[13px] text-[#9D9D9D]">
-                          모든 댓글을 확인했습니다
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
+              <CommentList
+                comments={displayedComments}
+                variant={variant}
+                isUpdating={isUpdating}
+                isDeleting={isDeleting}
+                hasMore={hasMore}
+                isLoadingMore={isLoadingMore}
+                onLoadMore={handleLoadMore}
+                onEdit={handleStartEdit}
+                onDelete={handleOpenDeleteDialog}
+                onSaveEdit={handleSaveEdit}
+                onCancelEdit={handleCancelEdit}
+                editingCommentId={editingCommentId}
+                editingContent={editingContent}
+                onEditingContentChange={setEditingContent}
+              />
             </div>
           </section>
         </section>
       </main>
 
-      {isDeleteDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="w-[428px] rounded-[16px] bg-white px-[24px] py-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.16)]">
-            <p className="mb-[20px] text-[14px] text-[#121212]">
-              댓글을 삭제하시겠습니까?
-            </p>
-            <div className="flex justify-end gap-[8px]">
-              <Button
-                type="button"
-                onClick={handleCancelDeleteComment}
-                className="h-[38px] rounded-[999px] border border-[#E4E4E4] bg-white px-[20px] text-[13px] font-medium text-[#707070] shadow-none hover:bg-[#F7F7F7]"
-              >
-                취소
-              </Button>
-              <Button
-                type="button"
-                onClick={handleConfirmDeleteComment}
-                disabled={isDeleting}
-                className="h-[38px] rounded-[999px] bg-[#6201E0] px-[20px] text-[13px] font-semibold text-white shadow-none hover:bg-[#5201C0] disabled:bg-[#E0E0E0]"
-              >
-                {isDeleting ? '삭제 중...' : '확인'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteDialog
+        isOpen={isDeleteDialogOpen}
+        isDeleting={isDeleting}
+        onCancel={handleCancelDeleteComment}
+        onConfirm={handleConfirmDeleteComment}
+      />
     </div>
   );
 }
