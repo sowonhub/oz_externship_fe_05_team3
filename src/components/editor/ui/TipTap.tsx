@@ -1,11 +1,11 @@
 import { EditorContent } from '@tiptap/react';
 import type { Editor } from '@tiptap/core';
 
-type Props = {
+type TextEditorProps = {
   editor: Editor | null;
 };
 
-const TextEditor = ({ editor }: Props) => {
+const TextEditor = ({ editor }: TextEditorProps) => {
   if (!editor) return null;
 
   return (

@@ -56,7 +56,7 @@ function CommunityCreatePage() {
           {/* TODOS : 제목 입력 필드 상태 관리 */}
           <Input variant="title" placeholder="제목을 입력해주세요" />
         </div>
-        <div className="border-oz-gray-light h-full overflow-hidden rounded-[20px] border">
+        <div className="border-oz-gray-light my-5 h-full overflow-hidden rounded-[20px] border">
           <ToolBar editor={editor} />
           <TipTap editor={editor} />
         </div>
