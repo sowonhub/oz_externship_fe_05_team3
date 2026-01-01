@@ -1,6 +1,4 @@
-import type { CategoryDTO } from '@/components/editor/api/dto';
 import { communityQueries } from '@/components/editor/api/queries';
-import { COMMUNITY_CATEGORIES } from '@/components/editor/model/communityCategory';
 import EditorHeader from '@/components/editor/ui/EditorHeader';
 import TipTap from '@/components/editor/ui/TipTap';
 import ToolBar from '@/components/editor/ui/ToolBarBtn';
