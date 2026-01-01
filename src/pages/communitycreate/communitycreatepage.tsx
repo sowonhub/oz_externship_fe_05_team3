@@ -15,12 +15,20 @@ import {
 import { useTextEditor } from '@/hooks/tiptap';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useParams } from 'react-router';
 
-function CommunityCreatePage() {
+type Mode = 'create' | 'edit';
+
+function CommunityCreatePage({ mode }: { mode: Mode }) {
+  // 수정일 때만 게시글 조회
+  const { id } = useParams<{ id: string }>();
+  const isEdit = mode === 'edit';
+
   // const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [content, setContent] = useState('');
 
+  // 카테고리 목록 조회
   const { data: categories } = useQuery(communityQueries.getCategories());
   const categoriesList = categories?.results ?? [];
   const editor = useTextEditor({
@@ -29,6 +37,11 @@ function CommunityCreatePage() {
       setContent(editor.getHTML());
     },
   });
+
+  // edit 모드일 때 기존 게시글 데이터 조회
+  const { data: postDetail } = useQuery(
+    communityQueries.getCommunityDetail({ id: Number(id), enabled: isEdit })
+  );
 
   console.log(categoryId, content);
   return (
@@ -66,9 +79,7 @@ function CommunityCreatePage() {
           <ToolBar editor={editor} />
           <TipTap editor={editor} />
         </div>
-        <div className="flex justify-end">
-          <Button>등록하기</Button>
-        </div>
+        <Button className="ml-auto">등록하기</Button>
       </div>
     </div>
   );
