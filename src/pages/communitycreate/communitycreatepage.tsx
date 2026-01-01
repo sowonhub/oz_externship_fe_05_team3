@@ -1,3 +1,5 @@
+import type { CategoryDTO } from '@/components/editor/api/dto';
+import { communityQueries } from '@/components/editor/api/queries';
 import { COMMUNITY_CATEGORIES } from '@/components/editor/model/communityCategory';
 import EditorHeader from '@/components/editor/ui/EditorHeader';
 import TipTap from '@/components/editor/ui/TipTap';
@@ -13,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useTextEditor } from '@/hooks/tiptap';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 function CommunityCreatePage() {
@@ -20,6 +23,8 @@ function CommunityCreatePage() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [content, setContent] = useState('');
 
+  const { data: categories } = useQuery(communityQueries.getCategories());
+  const categoriesList = categories?.results ?? [];
   const editor = useTextEditor({
     content: '',
     onUpdate: ({ editor }) => {
@@ -34,20 +39,23 @@ function CommunityCreatePage() {
         <EditorHeader />
         <div className="border-oz-gray-light round flex flex-col gap-5 rounded-[20px] border px-[38px] py-10">
           {/* TODOS: 커뮤니티 카테고리 default value 변경 */}
-          <Select>
+          <Select
+            value={categoryId ? String(categoryId) : undefined}
+            onValueChange={(value) => setCategoryId(Number(value))}
+          >
             <SelectTrigger variant="bordered" color="gray" className="w-full">
               <SelectValue placeholder="카테고리 선택" />
             </SelectTrigger>
             <SelectContent>
               {/* TODOS : 커뮤니티 카테고리 타입 분리 */}
               <SelectGroup className="w-full">
-                {COMMUNITY_CATEGORIES.map((category) => (
+                {categoriesList.map((category) => (
                   <SelectItem
                     key={category.id}
                     value={String(category.id)}
                     onSelect={() => setCategoryId(category.id)}
                   >
-                    {category.label}
+                    {category.name}
                   </SelectItem>
                 ))}
               </SelectGroup>
