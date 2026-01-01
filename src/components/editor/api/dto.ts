@@ -1,4 +1,4 @@
-// Category DTOs
+// Category DTO
 export interface CategoryResponseDTO {
   count: number;
   next: string | null;
