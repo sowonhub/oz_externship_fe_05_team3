@@ -27,7 +27,7 @@ function CommunityCreatePage({ mode }: { mode: Mode }) {
   const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [content, setContent] = useState('');
-
+  console.log(content);
   // 카테고리 목록 조회
   const { data: categories } = useQuery(communityQueries.getCategories());
   const categoriesList = categories?.results ?? [];
