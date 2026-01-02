@@ -41,11 +41,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'create',
-        element: <CommunityCreatePage />,
+        element: <CommunityCreatePage mode="create" />,
       },
       {
         path: 'edit/:id',
-        element: <CommunityCreatePage />,
+        element: <CommunityCreatePage mode="edit" />,
       },
     ],
   },
