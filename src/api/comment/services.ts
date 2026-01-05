@@ -12,7 +12,7 @@ const BASE_PATH = '/posts';
 
 export const commentService = {
   // 댓글 목록 조회
-  getComments(postId: number, page = 1, pageSize = 100) {
+  getComments(postId: number) {
     return apiClient.get<CommentListResponseDTO>(
       `${BASE_PATH}/${postId}/comments`
     );
