@@ -22,6 +22,24 @@ export interface Post {
   category_id: ECategoryId;
 }
 
+// 게시글 상세 정보
+export interface PostDetail {
+  id: number;
+  author: Author;
+  title: string;
+  content: string;
+  thumbnail_img_url: string;
+  comment_count: number;
+  view_count: number;
+  like_count: number;
+  created_at: string;
+  updated_at: string;
+  category: {
+    id: number;
+    name: string;
+  };
+}
+
 // 작성자 정보
 export interface Author {
   id: number;

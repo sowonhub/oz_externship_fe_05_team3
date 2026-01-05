@@ -3,13 +3,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { Button, Avatar, AvatarFallback, AvatarImage } from '@/lib/index';
-import { ThumbsUp } from 'lucide-react';
+import { ThumbsUp, Loader2 } from 'lucide-react';
 
 import { CommentForm } from '@/components/CommunityDetailPage/CommentForm/CommentForm';
 import { CommentList } from '@/components/CommunityDetailPage/CommentList/CommentList';
 import { DeleteDialog } from '@/components/CommunityDetailPage/CommentList/DeleteDialog';
 
 import { useComments } from '@/hooks/usecomments';
+import usePostDetail from '@/hooks/usePostDetail';
 import { formatDate } from '@/utils/index';
 import linkIcon from '@/assets/icon/feathericons/link.png';
 
@@ -25,20 +26,6 @@ interface Comment {
   createdAt: string;
 }
 
-interface Post {
-  id: string;
-  category: string;
-  title: string;
-  content: string;
-  author: {
-    nickname: string;
-    profileImageUrl: string;
-  };
-  views: number;
-  likes: number;
-  createdAt: string;
-  comments: Comment[];
-}
 
 // 타입 어댑터 함수
 function adaptApiCommentToUiComment(apiComment: any): Comment {
@@ -56,7 +43,14 @@ function adaptApiCommentToUiComment(apiComment: any): Comment {
 function CommunityDetailPage() {
   const { id } = useParams<{ id: string }>();
 
-  // API 훅 호출
+  // 게시글 상세 API 훅 호출
+  const {
+    post,
+    isLoading: isPostLoading,
+    isError: isPostError,
+  } = usePostDetail(id);
+
+  // 댓글 API 훅 호출
   const {
     comments: apiComments,
     createComment,
@@ -90,63 +84,13 @@ function CommunityDetailPage() {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // 테스트용 더미 댓글 50개
-  // const dummyComments: Comment[] = useMemo(
-  //   () =>
-  //     Array.from({ length: 50 }, (_, i) => ({
-  //       id: i + 1,
-  //       author: {
-  //         nickname: ['안지선', '김소원', '나원국'][i % 3],
-  //         profileImageUrl: '',
-  //       },
-  //       content: [
-  //         '정말 좋은 글이네요! 저도 함께하고 싶어요 👍',
-  //         '러닝 메이트 구하시는군요. 언제 시작하시나요?',
-  //         '좋은 취지네요! 응원합니다 🔥',
-  //         '저도 관심 있어요! 연락 주세요',
-  //         '멋진 프로젝트네요. 화이팅!',
-  //         '같이 하면 좋을 것 같아요',
-  //         '좋은 기회인 것 같네요 ㅎㅎ',
-  //         '저도 참여하고 싶습니다!',
-  //         '언제 어디서 모이나요?',
-  //         '궁금한게 있는데 DM 가능할까요?',
-  //         '이런 모임 기다렸어요!',
-  //         '주말에 시간 되시나요?',
-  //         '저도 러닝 시작하려던 참이었어요',
-  //         '함께하면 더 재밌을 것 같네요!',
-  //         '정보 공유 감사합니다 🙏',
-  //       ][i % 15],
-  //       createdAt: `${i + 1}시간 전`,
-  //     })),
-  //   []
-  // );
-
-  // post 객체 생성
-  const post: Post = useMemo(
-    () => ({
-      id: id ?? '',
-      category: '구인/협업',
-      title: '러닝 메이트 함께해요.',
-      content:
-        'https://www.codeit.kr/costudy/join/684e26b75155062e46211e77\n\n함께 멈출해요',
-      author: {
-        nickname: '안지선',
-        profileImageUrl: '',
-      },
-      views: 60,
-      likes: 2,
-      createdAt: '15시간 전',
-      comments: convertedComments,
-    }),
-    [id, convertedComments]
-  );
 
   // 초기 댓글 페이지 설정
   useEffect(() => {
-    setDisplayedComments(post.comments.slice(0, pageSize));
+    setDisplayedComments(convertedComments.slice(0, pageSize));
     setPage(1);
-    setHasMore(post.comments.length > pageSize);
-  }, [post.comments]);
+    setHasMore(convertedComments.length > pageSize);
+  }, [convertedComments]);
 
   // 무한스크롤 로드 더보기
   const handleLoadMore = () => {
@@ -156,11 +100,11 @@ function CommunityDetailPage() {
       const nextPage = page + 1;
       const start = (nextPage - 1) * pageSize;
       const end = start + pageSize;
-      const nextSlice = post.comments.slice(start, end);
+      const nextSlice = convertedComments.slice(start, end);
 
       setDisplayedComments((prev) => [...prev, ...nextSlice]);
       setPage(nextPage);
-      setHasMore(end < post.comments.length);
+      setHasMore(end < convertedComments.length);
 
       setIsLoadingMore(false);
     }, 500);
@@ -218,13 +162,33 @@ function CommunityDetailPage() {
     setEditingContent('');
   };
 
+  // 로딩 상태
+  if (isPostLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <Loader2 className="h-8 w-8 animate-spin text-[#6B21A8]" />
+      </div>
+    );
+  }
+
+  // 에러 상태
+  if (isPostError || !post) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white">
+        <p className="text-[16px] text-[#9D9D9D]">
+          게시글을 불러오는데 실패했습니다.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-center bg-white pt-[112px] pb-[160px]">
       <main className="w-full max-w-[944px] px-[24px]">
         <section>
           <header className="border-b border-[#ECECEC] pb-[32px]">
             <div className="mb-[12px] text-[13px] font-semibold text-[#6B21A8]">
-              구인 / 협업
+              {post.category.name}
             </div>
 
             <div className="mb-[16px] flex items-start justify-between gap-[24px]">
@@ -234,9 +198,9 @@ function CommunityDetailPage() {
 
               <div className="flex shrink-0 items-center gap-[8px]">
                 <Avatar className="h-[40px] w-[40px]">
-                  <AvatarImage src={post.author.profileImageUrl} />
+                  <AvatarImage src={post.author.profile_image_url} />
                   <AvatarFallback className="bg-[#F5ECFF] text-[14px] font-semibold text-[#6B21A8]">
-                    {post.author.nickname[0]}
+                    {post.author.nickname}
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-[13px] font-semibold text-[#121212]">
@@ -247,9 +211,9 @@ function CommunityDetailPage() {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[12px] text-[13px] text-[#9D9D9D]">
-                <span>조회수 {post.views}</span>
-                <span>좋아요 {post.likes}</span>
-                <span>{post.createdAt}</span>
+                <span>조회수 {post.view_count}</span>
+                <span>좋아요 {post.like_count}</span>
+                <span>{formatDate(post.created_at)}</span>
               </div>
 
               {variant === 'author' && (
@@ -291,7 +255,7 @@ function CommunityDetailPage() {
                 }`}
               >
                 <ThumbsUp className="h-[16px] w-[16px]" />
-                <span className="leading-[16px]">{post.likes}</span>
+                <span className="leading-[16px]">{post.like_count}</span>
               </Button>
 
               <Button
@@ -331,7 +295,7 @@ function CommunityDetailPage() {
             <header className="mb-[20px] flex items-center justify-between">
               <div className="flex items-center gap-[6px] text-[14px] font-semibold text-[#121212]">
                 <span className="text-[18px]">💬</span>
-                <span>댓글 {post.comments.length}개</span>
+                <span>댓글 {convertedComments.length}개</span>
               </div>
               <button
                 type="button"

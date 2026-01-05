@@ -1,5 +1,5 @@
 import { ROUTES } from '@/routes';
-import type { PostListResponse, PostQueryParams } from './types';
+import type { PostListResponse, PostQueryParams, PostDetail } from './types';
 import { apiClient } from '../apiclient';
 
 // 빈 값 제거 헬퍼 함수
@@ -23,6 +23,10 @@ export const communityPostsApi = {
     const response = await apiClient.get<PostListResponse>(ROUTES.POSTS, {
       params: cleanParams(params),
     });
+    return response;
+  },
+  getCommunityPostDetail: async (id: string): Promise<PostDetail> => {
+    const response = await apiClient.get<PostDetail>(`${ROUTES.POSTS}/${id}`);
     return response;
   },
 };
